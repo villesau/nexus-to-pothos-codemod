@@ -30,7 +30,7 @@ export const otherStuff = builder.mutationField("otherStuff", t => t.field({
 }));
 
 export const otherStuff2 = builder.queryField("someQuery", t => t.field({
-  type: OtherType,
+  type: [OtherType],
   nullable: true,
   args: {
     id: t.arg.id({

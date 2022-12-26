@@ -21,7 +21,7 @@ export const otherStuff = mutationField('otherStuff', {
 });
 
 export const otherStuff2 = queryField('someQuery', {
-  type: OtherType,
+  type: list(OtherType),
   args: {
     id: nonNull(idArg()),
     str: stringArg(),
