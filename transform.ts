@@ -76,8 +76,10 @@ const transform: Transform = (file, api) => {
     const typeProperty = config.properties.find(p => p.key.name === 'type')
     const isNullable = typeProperty.value.type === 'CallExpression' && typeProperty.value.callee.name === 'nullable'
     if(isNullable) {
-      if(typeProperty.value.arguments[0].callee.name === 'list') {
+      if(typeProperty.value.arguments[0]?.callee?.name === 'list') {
         typeProperty.value = j.arrayExpression([typeProperty.value.arguments[0].arguments[0]]);
+      } else {
+        typeProperty.value = typeProperty.value.arguments[0];
       }
     } else if(typeProperty.value.type === 'CallExpression' && typeProperty.value.callee.name === 'list') {
       typeProperty.value = j.arrayExpression([typeProperty.value.arguments[0]]);

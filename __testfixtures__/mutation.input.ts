@@ -38,7 +38,14 @@ export const otherStuff3 = queryField('someQuery', {
     id: nonNull(idArg()),
     str: stringArg(),
   },
-  authorize: (source, args, ctx) => !!ctx.user,
+  async resolve() {
+    return 123;
+  }
+});
+
+export const otherStuff4 = queryField('someQuery', {
+  type: nullable(OtherType),
+  args: {},
   async resolve() {
     return 123;
   }

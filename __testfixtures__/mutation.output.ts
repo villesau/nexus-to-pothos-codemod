@@ -50,7 +50,15 @@ export const otherStuff3 = builder.queryField("someQuery", t => t.field({
     }),
     str: t.arg.string()
   },
-  authScopes: (source, args, ctx) => !!ctx.user,
+  async resolve() {
+    return 123;
+  }
+}));
+
+export const otherStuff4 = builder.queryField("someQuery", t => t.field({
+  type: OtherType,
+  nullable: true,
+  args: {},
   async resolve() {
     return 123;
   }
