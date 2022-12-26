@@ -2,6 +2,7 @@ export const doThings = mutationField('doThings', {
   type: SomeType,
   args: {
     id: nonNull(idArg()),
+    randomType: nonNull(RandomType)
   },
   async resolve() {
     return null;

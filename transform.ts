@@ -40,13 +40,25 @@ const transform: Transform = (file, api) => {
       newArgs.value.properties = newArgs.value.properties.map(p => {
         const name = p.key.name;
         const nonNullable = p.value.callee.name === 'nonNull';
-        const params = nonNullable ? [nullableObject(false, j)] : [];
+        const params = []
+        if(nonNullable) {
+          params.push( j.property('init', j.identifier('nullable'), j.booleanLiteral(false)))
+        }
         const val = p.value.arguments[0] ?? p.value;
-        const type = val.callee.name.match(/[a-z]+/g)[0];
-        const newArg = j.callExpression(
-          j.memberExpression(j.memberExpression(j.identifier('t'), j.identifier('arg')), j.identifier(type)),
-          params
-        );
+        let newArg;
+        if(val.type === 'Identifier') {
+          params.unshift( j.property('init', j.identifier('type'), val))
+          newArg = j.callExpression(
+            j.memberExpression(j.identifier('t'), j.identifier('arg')),
+            [j.objectExpression(params)]
+          );
+        } else {
+          const type = val.callee.name.match(/[a-z]+/g)[0];
+          newArg = j.callExpression(
+            j.memberExpression(j.memberExpression(j.identifier('t'), j.identifier('arg')), j.identifier(type)),
+            params.length ? [j.objectExpression(params)] : []
+          );
+        }
         return j.property('init', j.identifier(name), newArg);
       });
     }

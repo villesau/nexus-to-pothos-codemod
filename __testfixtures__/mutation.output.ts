@@ -4,6 +4,10 @@ export const doThings = builder.mutationField("doThings", t => t.field({
   args: {
     id: t.arg.id({
       nullable: false
+    }),
+    randomType: t.arg({
+      type: RandomType,
+      nullable: false
     })
   },
   async resolve() {
