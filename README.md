@@ -45,6 +45,11 @@ $ yarn add nexus-to-pothos-codemod
 $ jscodeshift -t node_modules/nexus-to-pothos-codemod/transform.ts --ignore-pattern="**/node_modules/**" ./**/*.js  --parser=ts
 ```
 
+## Migrating the codebase
+
+The codemod might not be 100% accurate. You will need to do some manual adjustments. Might be good to compare
+the generated GraphQL schema with the old one to see if there are any differences.
+
 ## What is missing?
 
 - automatic import updates
