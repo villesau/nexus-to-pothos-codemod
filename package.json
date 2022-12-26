@@ -13,7 +13,8 @@
     "codemod",
     "graphql",
     "nexus",
-    "pothos"
+    "pothos",
+    "jscodeshift"
   ],
   "author": "Ville Saukkonen",
   "license": "MIT",
