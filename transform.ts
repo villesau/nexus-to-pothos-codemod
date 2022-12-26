@@ -17,12 +17,24 @@ const transform: Transform = (file, api) => {
       const callee = p.value.callee;
       return callee.type === 'Identifier' && callee.name === 'objectType';
     });
+  const enums = root
+    .find(j.CallExpression).filter(p => {
+      const callee = p.value.callee;
+      return callee.type === 'Identifier' && callee.name === 'enumType';
+    });
   const queriesMutations = root
     .find(j.CallExpression).filter(p => {
       const callee = p.value.callee;
       const functionNames = ['mutationField', 'queryField'];
       return callee.type === 'Identifier' && functionNames.includes(callee.name) && p.value.arguments[0].type === 'StringLiteral';
     });
+  enums.replaceWith(p => {
+    const name = p.value.arguments[0].properties.find((p: any) => p.key.name === 'name').value;
+    const members = p.value.arguments[0].properties.find((p: any) => p.key.name === 'members').value.elements.map((e: any) => e.value);
+    return statement`builder.enumType(${name}, {
+  values: ${j.arrayExpression(members.map((m: string) => j.stringLiteral(m)))} as const
+})`;
+  })
   queriesMutations.replaceWith(p => {
     const functionName = p.value.callee.name;
     const args = p.value.arguments;

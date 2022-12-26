@@ -16,4 +16,11 @@ describe("nexus to pothos", () => {
         "objectType",
         { parser: "ts", extensions: "ts" });
   });
+
+  describe("enum types", () => {
+    defineTest(__dirname, "transform",
+        null,
+        "enums",
+        { parser: "ts", extensions: "ts" });
+  });
 });
