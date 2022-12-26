@@ -12,5 +12,12 @@ export const SomeObjectType = objectType({
         return value.doSmthng();
       }
     });
+    t.field({
+      name: 'f',
+      type: SomeType,
+      async resolve(rootObject: any, args, ctx) {
+        return ctx.smthng();
+      }
+    });
   }
 });

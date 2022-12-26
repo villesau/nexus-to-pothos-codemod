@@ -15,6 +15,12 @@ export const SomeObjectType = builder.objectRef<any>('SomeObjectType')
         resolve(value: any) {
           return value.doSmthng();
         }
+      }),
+      f: t.expose('f', {
+        type: SomeType,
+        async resolve(rootObject: any, args, ctx) {
+          return ctx.smthng();
+        }
       })
     })
   });

@@ -75,25 +75,38 @@ const transform: Transform = (file, api) => {
     const type = object.properties.find(p => p.key.name === 'name').value;
     const definitions = object.properties.find(p => p.key.name === 'definition').body.body;
     const fields = definitions.map(node => {
-      const functionParam = node.expression.arguments[0];
       const functionName = node.expression.callee.property.name;
       const isNullable = node.expression.callee.object.property?.name === 'nullable'
-      const type = functionName === 'field' ? (node.expression.arguments[1]).properties[0].value.name : functionName;
+      let propertyName;
+      let type;
+      let resolve;
+      if(functionName === 'field' && node.expression.arguments[0].type === 'ObjectExpression') {
+         propertyName = node.expression.arguments[0].properties.find(p => p.key.name === 'name').value;
+         type = node.expression.arguments[0].properties.find(p => p.key.name === 'type').value;
+         resolve = node.expression.arguments[0].properties.find(p => p.key.name === 'resolve');
+      } else if(functionName === 'field') {
+         propertyName = node.expression.arguments[0];
+         type = node.expression.arguments[1].properties.find(p => p.key.name === 'type').value;
+         resolve = node.expression.arguments[1].properties.find(p => p.key.name === 'resolve')
+      } else {
+         propertyName = node.expression.arguments[0];
+         type = functionName;
+         resolve = node.expression.arguments[1]?.properties.find(p => p.key.name === 'resolve')
+      }
       const exposeName = functionName === 'field' ? 'expose' : `expose${capitalizeFirstLetter(type === 'id' ? 'ID' : type)}`;
       const objectProps = [];
       if (functionName === 'field') {
-        objectProps.push(j.property('init', j.identifier('type'), node.expression.arguments[1].properties[0].value))
+        objectProps.push(j.property('init', j.identifier('type'), type))
       }
       if (isNullable) {
         objectProps.push(j.property('init', j.identifier('nullable'), j.booleanLiteral(true)))
       }
-      const resolve = node.expression.arguments[1]?.properties.find(p => p.key.name === 'resolve');
       if (resolve) {
         objectProps.push(resolve)
       }
-      return j.property('init', j.identifier(functionParam.value), j.callExpression(
+      return j.property('init', j.identifier(propertyName.value), j.callExpression(
         j.memberExpression(j.identifier('t'), j.identifier(exposeName)),
-        objectProps.length ? [functionParam, j.objectExpression(objectProps)] : [functionParam]
+        objectProps.length ? [propertyName, j.objectExpression(objectProps)] : [propertyName]
       ));
     })
     return statement`builder.objectRef<any>(${type})
