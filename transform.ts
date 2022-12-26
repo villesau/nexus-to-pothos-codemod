@@ -30,9 +30,8 @@ const transform: Transform = (file, api) => {
     });
   enums.replaceWith(p => {
     const name = p.value.arguments[0].properties.find((p: any) => p.key.name === 'name').value;
-    const members = p.value.arguments[0].properties.find((p: any) => p.key.name === 'members').value.elements.map((e: any) => e.value);
     return statement`builder.enumType(${name}, {
-  values: ${j.arrayExpression(members.map((m: string) => j.stringLiteral(m)))} as const
+  values: ${p.value.arguments[0].properties.find((p: any) => p.key.name === 'members').value} as const
 })`;
   })
   queriesMutations.replaceWith(p => {
