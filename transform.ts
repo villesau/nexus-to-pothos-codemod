@@ -74,12 +74,17 @@ const transform: Transform = (file, api) => {
       });
     }
     const typeProperty = config.properties.find(p => p.key.name === 'type')
-    if(typeProperty.value.type === 'CallExpression' && typeProperty.value.callee.name === 'list') {
+    const isNullable = typeProperty.value.type === 'CallExpression' && typeProperty.value.callee.name === 'nullable'
+    if(isNullable) {
+      if(typeProperty.value.arguments[0].callee.name === 'list') {
+        typeProperty.value = j.arrayExpression([typeProperty.value.arguments[0].arguments[0]]);
+      }
+    } else if(typeProperty.value.type === 'CallExpression' && typeProperty.value.callee.name === 'list') {
       typeProperty.value = j.arrayExpression([typeProperty.value.arguments[0]]);
     }
     return statement`builder.${functionName}(${j.stringLiteral(name)}, t => t.field(${j.objectExpression([
       typeProperty,
-      j.property('init', j.identifier('nullable'), j.booleanLiteral(true)),
+      isNullable ? j.property('init', j.identifier('nullable'), j.booleanLiteral(true)): null,
       config.properties.find(p => p.key.name === 'args'),
       auth,
       config.properties.find(p => p.key.name === 'resolve')].filter(Boolean))}))`;

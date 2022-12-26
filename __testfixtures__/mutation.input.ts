@@ -31,3 +31,15 @@ export const otherStuff2 = queryField('someQuery', {
     return 123;
   }
 });
+
+export const otherStuff3 = queryField('someQuery', {
+  type: nullable(list(OtherType)),
+  args: {
+    id: nonNull(idArg()),
+    str: stringArg(),
+  },
+  authorize: (source, args, ctx) => !!ctx.user,
+  async resolve() {
+    return 123;
+  }
+});
