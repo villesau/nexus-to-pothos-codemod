@@ -52,8 +52,9 @@ the generated GraphQL schema with the old one to see if there are any difference
 
 ## What is missing?
 
-- automatic import updates
-- queries that takes a function in such as relay stuff
+- Automatic import updates
+- Queries that takes a function in such as relay stuff
+- Interfaces
 
 ## Contributing
 
