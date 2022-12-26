@@ -48,7 +48,7 @@ $ jscodeshift -t node_modules/nexus-to-pothos-codemod/transform.ts --ignore-patt
 ## What is missing?
 
 - automatic import updates
-- queries that takes a function in
+- queries that takes a function in such as relay stuff
 
 ## Contributing
 
