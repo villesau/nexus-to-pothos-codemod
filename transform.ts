@@ -53,7 +53,7 @@ const transform: Transform = (file, api) => {
         const nonNullable = p.value.callee.name === 'nonNull';
         const params = []
         if(nonNullable) {
-          params.push( j.property('init', j.identifier('nullable'), j.booleanLiteral(false)))
+          params.push( j.property('init', j.identifier('required'), j.booleanLiteral(true)))
         }
         const val = p.value.arguments[0] ?? p.value;
         let newArg;

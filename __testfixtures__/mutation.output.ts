@@ -3,11 +3,11 @@ export const doThings = builder.mutationField("doThings", t => t.field({
   nullable: true,
   args: {
     id: t.arg.id({
-      nullable: false
+      required: true
     }),
     randomType: t.arg({
       type: RandomType,
-      nullable: false
+      required: true
     })
   },
   async resolve() {
@@ -20,7 +20,7 @@ export const otherStuff = builder.mutationField("otherStuff", t => t.field({
   nullable: true,
   args: {
     id: t.arg.id({
-      nullable: false
+      required: true
     }),
     str: t.arg.string()
   },
@@ -34,7 +34,7 @@ export const otherStuff2 = builder.queryField("someQuery", t => t.field({
   nullable: true,
   args: {
     id: t.arg.id({
-      nullable: false
+      required: true
     }),
     str: t.arg.string()
   },
