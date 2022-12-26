@@ -8,6 +8,8 @@ process.argv.shift();
 const args = [
   "-t",
   path.resolve(__dirname, "../transform.ts"),
+    "-p", "ts",
+    "--extensions", "ts",
   ...process.argv
 ];
 const result = execa.sync(jscodeshiftExecutable, args, {
