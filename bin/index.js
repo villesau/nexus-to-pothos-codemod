@@ -8,7 +8,7 @@ process.argv.shift();
 const args = [
   "-t",
   path.resolve(__dirname, "../transform.ts"),
-    "-p", "ts",
+    "--parser", "ts",
     "--extensions", "ts",
   ...process.argv
 ];
