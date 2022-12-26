@@ -74,20 +74,20 @@ const transform: Transform = (file, api) => {
     const object = p.value.arguments[0];
     const type = object.properties.find(p => p.key.name === 'name').value;
     const definitions = object.properties.find(p => p.key.name === 'definition').body.body;
-    const fields = definitions.map(p => {
-      const functionParam = p.expression.arguments[0];
-      const functionName = p.expression.callee.property.name;
-      const isNullable = p.expression.callee.object.property?.name === 'nullable'
-      const type = functionName === 'field' ? p.expression.arguments[1].properties[0].value.name : functionName;
+    const fields = definitions.map(node => {
+      const functionParam = node.expression.arguments[0];
+      const functionName = node.expression.callee.property.name;
+      const isNullable = node.expression.callee.object.property?.name === 'nullable'
+      const type = functionName === 'field' ? (node.expression.arguments[1]).properties[0].value.name : functionName;
       const exposeName = functionName === 'field' ? 'expose' : `expose${capitalizeFirstLetter(type === 'id' ? 'ID' : type)}`;
       const objectProps = [];
       if (functionName === 'field') {
-        objectProps.push(j.property('init', j.identifier('type'), p.expression.arguments[1].properties[0].value))
+        objectProps.push(j.property('init', j.identifier('type'), node.expression.arguments[1].properties[0].value))
       }
       if (isNullable) {
         objectProps.push(j.property('init', j.identifier('nullable'), j.booleanLiteral(true)))
       }
-      const resolve = p.expression.arguments[1]?.properties.find(p => p.key.name === 'resolve');
+      const resolve = node.expression.arguments[1]?.properties.find(p => p.key.name === 'resolve');
       if (resolve) {
         objectProps.push(resolve)
       }
