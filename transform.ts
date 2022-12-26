@@ -21,7 +21,7 @@ const transform: Transform = (file, api) => {
     .find(j.CallExpression).filter(p => {
       const callee = p.value.callee;
       const functionNames = ['mutationField', 'queryField'];
-      return callee.type === 'Identifier' && functionNames.includes(callee.name);
+      return callee.type === 'Identifier' && functionNames.includes(callee.name) && p.value.arguments[0].type === 'StringLiteral';
     });
   queriesMutations.replaceWith(p => {
     const functionName = p.value.callee.name;
