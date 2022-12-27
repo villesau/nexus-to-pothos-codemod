@@ -3,10 +3,10 @@
 const defineTest = require("jscodeshift/dist/testUtils").defineTest;
 
 describe("nexus to pothos", () => {
-  describe("mutation and queries", () => {
+  describe("mutations and queries", () => {
     defineTest(__dirname, "transform",
         null,
-        "mutation",
+        "mutations_and_queries",
         { parser: "ts", extensions: "ts" });
   });
 
