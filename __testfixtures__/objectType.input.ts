@@ -1,6 +1,7 @@
 export const SomeObjectType = objectType({
   name: 'SomeObjectType',
   definition(t) {
+    t.implements(SomeType1);
     t.id('a');
     t.float('b');
     t.nullable.float('c');

@@ -70,6 +70,12 @@ const transform: Transform = (file, api) => {
             j.memberExpression(j.identifier('t'), j.identifier('arg')),
             [j.objectExpression(params)]
           );
+        } else if(val.type === 'ExpressionStatement') {
+          params.unshift(j.property('init', j.identifier('type'), val.expression))
+          newArg = j.callExpression(
+            j.memberExpression(j.identifier('t'), j.identifier('arg')),
+            [j.objectExpression(params)]
+          );
         } else {
           const type = val.callee.name.match(/[a-z]+/g)[0];
           newArg = j.callExpression(
@@ -173,8 +179,13 @@ const transform: Transform = (file, api) => {
     const object = p.value.arguments[0];
     const type = object.properties.find(p => p.key.name === 'name').value;
     const definitions = object.properties.find(p => p.key.name === 'definition').body.body;
+    const implementsInterfaces = [];
     const fields = definitions.map(node => {
       const functionName = node.expression.callee.property.name;
+      if(functionName === 'implements') {
+        implementsInterfaces.push(node.expression.arguments[0].name);
+        return null;
+      }
       const isNullable = node.expression.callee.object.property?.name === 'nullable'
       let propertyName;
       let type;
@@ -207,11 +218,19 @@ const transform: Transform = (file, api) => {
         j.memberExpression(j.identifier('t'), j.identifier(exposeName)),
         objectProps.length ? [propertyName, j.objectExpression(objectProps)] : [propertyName]
       ));
-    })
+    }).filter(Boolean);
+    const objectProps = [];
+    if (implementsInterfaces.length) {
+      objectProps.push(j.property('init', j.identifier('interfaces'), j.arrayExpression(implementsInterfaces.map(i => j.identifier(i)))));
+    }
+    if (fields.length) {
+      objectProps.push(j.property('init', j.identifier('fields'), j.arrowFunctionExpression(
+        [j.identifier('t')],
+        j.objectExpression(fields)
+      )));
+    }
     return statement`builder.objectRef<any>(${type})
-  .implement({
-    fields: (t) => ${j.objectExpression(fields)}
-  })`;
+  .implement(${j.objectExpression(objectProps)})`;
   });
   return root.toSource();
 };
