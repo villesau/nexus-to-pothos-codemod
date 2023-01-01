@@ -53,8 +53,19 @@ the generated GraphQL schema with the old one to see if there are any difference
 ## What is missing?
 
 - Automatic import updates
-- Queries that takes a function in such as relay stuff
-- Interfaces
+- It assumes some conventions such as `async nodes((_, args, ctx) {}` instead of `nodes: async ((_, args, ctx) => {}` which causes exceptions
+- Does not understand computed fields such as:
+
+    ```
+  export const Object = objectType({
+    name: 'Object',
+    definition(t) {
+      objectFields.forEach(objectField => t.string(objectField));
+    }
+  });
+  ```
+- Might fail on complex types
+
 
 ## Contributing
 

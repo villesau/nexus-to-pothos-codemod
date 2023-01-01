@@ -1,6 +1,7 @@
 export const SomeObjectType = objectType({
   name: 'SomeObjectType',
   definition(t) {
+    t.implements(SomeType1);
     t.id('a');
     t.float('b');
     t.nullable.float('c');
@@ -19,5 +20,23 @@ export const SomeObjectType = objectType({
         return ctx.smthng();
       }
     });
+  }
+});
+
+export const Interface = interfaceType({
+  name: 'SomeType1',
+  definition(t) {
+    t.id('id');
+    t.string('stringField');
+    t.field({
+      name: 'resolvableField',
+      type: SomeType2,
+      async resolve(rootObject, args, ctx) {
+        return 123;
+      }
+    });
+  },
+  resolveType(item) {
+    return item.__typename;
   }
 });

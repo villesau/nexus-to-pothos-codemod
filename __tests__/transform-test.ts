@@ -23,4 +23,11 @@ describe("nexus to pothos", () => {
         "enums",
         { parser: "ts", extensions: "ts" });
   });
+
+  describe("relay fields", () => {
+    defineTest(__dirname, "transform",
+        null,
+        "relay",
+        { parser: "ts", extensions: "ts" });
+  });
 });
