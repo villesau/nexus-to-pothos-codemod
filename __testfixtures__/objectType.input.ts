@@ -22,3 +22,21 @@ export const SomeObjectType = objectType({
     });
   }
 });
+
+export const Interface = interfaceType({
+  name: 'SomeType1',
+  definition(t) {
+    t.id('id');
+    t.string('stringField');
+    t.field({
+      name: 'resolvableField',
+      type: SomeType2,
+      async resolve(rootObject, args, ctx) {
+        return 123;
+      }
+    });
+  },
+  resolveType(item) {
+    return item.__typename;
+  }
+});

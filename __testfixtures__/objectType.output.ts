@@ -25,3 +25,20 @@ export const SomeObjectType = builder.objectRef<any>('SomeObjectType')
     })
   })
 });
+
+export const Interface = builder.interfaceRef<any>('SomeType1')
+  .implement({
+  fields: t => ({
+    id: t.id(),
+    stringField: t.string(),
+    resolvableField: t.field({
+      type: SomeType2,
+      async resolve(rootObject, args, ctx) {
+        return 123;
+      }
+    })
+  }),
+  resolveType(item) {
+    return item.__typename;
+  }
+});

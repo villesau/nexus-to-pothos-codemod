@@ -15,7 +15,7 @@ const transform: Transform = (file, api) => {
   const objects = root
     .find(j.CallExpression).filter(p => {
       const callee = p.value.callee;
-      return callee.type === 'Identifier' && callee.name === 'objectType';
+      return callee.type === 'Identifier' && (callee.name === 'objectType' || callee.name === 'interfaceType');
     });
   const enums = root
     .find(j.CallExpression).filter(p => {
@@ -70,7 +70,7 @@ const transform: Transform = (file, api) => {
             j.memberExpression(j.identifier('t'), j.identifier('arg')),
             [j.objectExpression(params)]
           );
-        } else if(val.type === 'ExpressionStatement') {
+        } else if (val.type === 'ExpressionStatement') {
           params.unshift(j.property('init', j.identifier('type'), val.expression))
           newArg = j.callExpression(
             j.memberExpression(j.identifier('t'), j.identifier('arg')),
@@ -179,12 +179,26 @@ const transform: Transform = (file, api) => {
     const object = p.value.arguments[0];
     const type = object.properties.find(p => p.key.name === 'name').value;
     const definitions = object.properties.find(p => p.key.name === 'definition').body.body;
+    const resolveType = object.properties.find(p => p.key.name === 'resolveType');
+    const objectType = p.node.callee.name === 'interfaceType' ? 'interfaceRef' : 'objectRef';
     const implementsInterfaces = [];
     const fields = definitions.map(node => {
       const functionName = node.expression.callee.property.name;
-      if(functionName === 'implements') {
+      if (functionName === 'implements') {
         implementsInterfaces.push(node.expression.arguments[0].name);
         return null;
+      }
+      if(objectType === 'interfaceRef'){
+        const functionName = node.expression.callee.property.name;
+        const args = [];
+        let name;
+        if (functionName === 'field') {
+          name = node.expression.arguments[0].properties.find(p => p.key.name === 'name').value.value
+          args.push(j.objectExpression(node.expression.arguments[0].properties.filter(p => p.key.name !== 'name')));
+        } else {
+          name = node.expression.arguments[0].value
+        }
+        return j.property('init', j.identifier(name), j.callExpression(j.memberExpression(j.identifier('t'), j.identifier(functionName)), args));
       }
       const isNullable = node.expression.callee.object.property?.name === 'nullable'
       let propertyName;
@@ -229,7 +243,10 @@ const transform: Transform = (file, api) => {
         j.objectExpression(fields)
       )));
     }
-    return statement`builder.objectRef<any>(${type})
+    if (resolveType) {
+      objectProps.push(resolveType);
+    }
+    return statement`builder.${objectType}<any>(${type})
   .implement(${j.objectExpression(objectProps)})`;
   });
   return root.toSource();
