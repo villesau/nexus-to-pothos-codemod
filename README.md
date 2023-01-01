@@ -69,4 +69,4 @@ the generated GraphQL schema with the old one to see if there are any difference
 
 ## Contributing
 
-Contributions are more than welcome!
+Contributions are more than welcome! Some useful tools for developing this are https://astexplorer.net/ and your editors builtin debugger.
