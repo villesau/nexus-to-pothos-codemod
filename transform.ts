@@ -4,10 +4,6 @@ function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-const nullableObject = (nullable: boolean, j: JSCodeshift) => j.objectExpression([
-  j.property('init', j.identifier('nullable'), j.booleanLiteral(nullable))
-])
-
 const transform: Transform = (file, api) => {
   const j = api.jscodeshift;
   const {statement} = j.template;
