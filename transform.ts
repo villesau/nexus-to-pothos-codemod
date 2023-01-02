@@ -286,7 +286,7 @@ const transform: Transform = (file, api) => {
       objectProps.push(resolveType);
     }
     if(objectType === 'inputType') {
-      return statement`builder.${objectType}<any>(${type}, ${j.objectExpression(objectProps)})`
+      return statement`builder.${objectType}(${type}, ${j.objectExpression(objectProps)})`
     }
     return statement`builder.${objectType}<any>(${type})
   .implement(${j.objectExpression(objectProps)})`;

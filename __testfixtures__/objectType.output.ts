@@ -50,7 +50,7 @@ export const Interface = builder.interfaceRef<any>('SomeType1')
   }
 });
 
-export const Input = builder.inputType<any>('Input', {
+export const Input = builder.inputType('Input', {
   fields: t => ({
     a: t.string(),
     b: t.int(),
