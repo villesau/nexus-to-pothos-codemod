@@ -52,9 +52,9 @@ the generated GraphQL schema with the old one to see if there are any difference
 
 ## What is missing?
 
-- Automatic import updates
-- It assumes some conventions such as `async nodes((_, args, ctx) {}` instead of `nodes: async ((_, args, ctx) => {}` which causes exceptions
-- Does not understand computed fields such as:
+- automatic import updates
+- it assumes some conventions such as `async nodes((_, args, ctx) {}` instead of `nodes: async ((_, args, ctx) => {}` which causes exceptions
+- does not understand computed fields such as:
 
     ```
   export const Object = objectType({
@@ -64,10 +64,60 @@ the generated GraphQL schema with the old one to see if there are any difference
     }
   });
   ```
-- Might fail on complex types
+- might fail on complex types
 - `unionType` not transformed
 - `scalarType` not transformed
+- lists not handled properly always, `[]` needs to be mostly added manually
+- args of `connnectionField` not transformed preoperly
+- `authScope` in connectionField and some nested fields not transformed properly
 
+Parts that causes exceptions can be commented out and fixed manually. Rest are fairly easy to compare to the old schema.
+Be extra careful with the `authScope`.
+
+An example builder config:
+
+```ts
+import SchemaBuilder from '@pothos/core';
+import RelayPlugin from '@pothos/plugin-relay';
+import ScopeAuthPlugin from '@pothos/plugin-scope-auth';
+import { GraphQLJSONObject } from 'graphql-type-json';
+
+export const builder = new SchemaBuilder<{
+  Context: {};
+  DefaultEdgesNullability: false;
+  DefaultNodeNullability: false;
+  Scalars: {
+    ID: {
+      Output: number | string;
+      Input: string;
+    };
+    JSONObject: {
+      Output: object;
+      Input: object;
+    };
+  };
+}>({
+  plugins: [ScopeAuthPlugin, RelayPlugin],
+  authScopes: context => ({}),
+  scopeAuthOptions: {
+    unauthorizedError: () => new Error(`Not authorized`)
+  },
+  relayOptions: {
+    clientMutationId: 'omit',
+    cursorType: 'ID',
+    edgesFieldOptions: {
+      nullable: false
+    },
+    nodeFieldOptions: {
+      nullable: false
+    }
+  }
+});
+
+builder.queryType();
+builder.mutationType();
+builder.addScalarType('JSONObject', GraphQLJSONObject, {});
+```
 
 ## Contributing
 
