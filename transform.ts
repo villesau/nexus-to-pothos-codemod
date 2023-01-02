@@ -171,9 +171,10 @@ const transform: Transform = (file, api) => {
     return statement`builder.${functionName}(${j.stringLiteral(name)}, t => t.connection(${j.objectExpression([
       typeProperty,
       isNullable ? j.property('init', j.identifier('nullable'), j.booleanLiteral(true)) : null,
-      auth ? auth : null,
       additionalArgs,
-      nodes].filter(Boolean))}))`;
+      auth ? auth : null,
+      nodes
+    ].filter(Boolean))}))`;
   });
 
   objects.replaceWith(p => {
