@@ -65,6 +65,8 @@ the generated GraphQL schema with the old one to see if there are any difference
   });
   ```
 - Might fail on complex types
+- `unionType` not transformed
+- `inputObjectType` not transformed
 
 
 ## Contributing
