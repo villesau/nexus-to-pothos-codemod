@@ -17,7 +17,7 @@ export const SomeObjectType = builder.objectRef<any>('SomeObjectType')
         return value.doSmthng();
       }
     }),
-    f: t.expose('f', {
+    f: t.field({
       type: SomeType,
       async resolve(rootObject: any, args, ctx) {
         return ctx.smthng();
@@ -25,6 +25,10 @@ export const SomeObjectType = builder.objectRef<any>('SomeObjectType')
     }),
     g: t.float({
       resolve: () => 1
+    }),
+    h: t.field({
+      type: [Type],
+      resolve: (somthng) => smthng.a()
     })
   })
 });

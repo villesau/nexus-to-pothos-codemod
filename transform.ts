@@ -164,9 +164,14 @@ const transform: Transform = (file, api) => {
         )
       ]);
     }
+    const auth = config.properties.find(p => p.key.name === 'authorize');
+    if (auth) {
+      auth.key.name = "authScopes";
+    }
     return statement`builder.${functionName}(${j.stringLiteral(name)}, t => t.connection(${j.objectExpression([
       typeProperty,
       isNullable ? j.property('init', j.identifier('nullable'), j.booleanLiteral(true)) : null,
+      auth ? auth : null,
       additionalArgs,
       nodes].filter(Boolean))}))`;
   });
@@ -226,10 +231,26 @@ const transform: Transform = (file, api) => {
         type = functionName;
         resolve = node.expression.arguments[1]?.properties.find(p => p.key.name === 'resolve')
       }
-      const exposeName = functionName === 'field' ? 'expose' : `expose${capitalizeFirstLetter(type === 'id' ? 'ID' : type)}`;
+      let exposeName;
+      const functionArguments = []
+      if(functionName === 'field') {
+        if(resolve) {
+          exposeName = 'field'
+        } else {
+          exposeName = 'expose'
+          functionArguments.push(propertyName)
+        }
+      } else {
+        exposeName = `expose${capitalizeFirstLetter(type === 'id' ? 'ID' : type)}`;
+        functionArguments.push(propertyName)
+      }
       const objectProps = [];
       if (functionName === 'field') {
-        objectProps.push(j.property('init', j.identifier('type'), type))
+        let finalType = type;
+        if(type.type === 'CallExpression' && type.callee.name === 'list') {
+          finalType = j.arrayExpression([type.arguments[0]])
+        }
+        objectProps.push(j.property('init', j.identifier('type'), finalType))
       }
       if (isNullable) {
         objectProps.push(j.property('init', j.identifier('nullable'), j.booleanLiteral(true)))
@@ -237,9 +258,12 @@ const transform: Transform = (file, api) => {
       if (resolve) {
         objectProps.push(resolve)
       }
+      if(objectProps.length) {
+        functionArguments.push(j.objectExpression(objectProps))
+      }
       return j.property('init', j.identifier(propertyName.value), j.callExpression(
         j.memberExpression(j.identifier('t'), j.identifier(exposeName)),
-        objectProps.length ? [propertyName, j.objectExpression(objectProps)] : [propertyName]
+        functionArguments
       ));
     }).filter(Boolean);
     const objectProps = [];

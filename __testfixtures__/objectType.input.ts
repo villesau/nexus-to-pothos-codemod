@@ -23,6 +23,10 @@ export const SomeObjectType = objectType({
     t.float('g', {
       resolve: () => 1,
     });
+    t.field('h', {
+      type: list(Type),
+      resolve: (somthng) => smthng.a()
+    });
   }
 });
 
