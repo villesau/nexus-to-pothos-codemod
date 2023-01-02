@@ -11,7 +11,7 @@ const transform: Transform = (file, api) => {
   const objects = root
     .find(j.CallExpression).filter(p => {
       const callee = p.value.callee;
-      return callee.type === 'Identifier' && (callee.name === 'objectType' || callee.name === 'interfaceType');
+      return callee.type === 'Identifier' && (callee.name === 'objectType' || callee.name === 'interfaceType' || callee.name === 'inputObjectType');
     });
   const enums = root
     .find(j.CallExpression).filter(p => {
@@ -182,7 +182,12 @@ const transform: Transform = (file, api) => {
     const type = object.properties.find(p => p.key.name === 'name').value;
     const definitions = object.properties.find(p => p.key.name === 'definition').body.body;
     const resolveType = object.properties.find(p => p.key.name === 'resolveType');
-    const objectType = p.node.callee.name === 'interfaceType' ? 'interfaceRef' : 'objectRef';
+    let objectType = 'objectRef';
+    if(p.node.callee.name === 'interfaceType') {
+      objectType = 'interfaceRef';
+    } else if(p.node.callee.name === 'inputObjectType') {
+      objectType = 'inputType';
+    }
     const implementsInterfaces = [];
     const fields = definitions.map(node => {
       const functionName = node.expression.callee.property.name;
@@ -191,7 +196,7 @@ const transform: Transform = (file, api) => {
         return null;
       }
       const isNullable = node.expression.callee.object.property?.name === 'nullable'
-      if(objectType === 'interfaceRef' || (node.expression.arguments.length === 2 && node.expression.callee.property.name !== 'field')){
+      if(objectType === 'interfaceRef' || objectType === 'inputType' || (node.expression.arguments.length === 2 && node.expression.callee.property.name !== 'field')){
         const functionName = node.expression.callee.property.name;
         const args = [];
         let name;
@@ -279,6 +284,9 @@ const transform: Transform = (file, api) => {
     }
     if (resolveType) {
       objectProps.push(resolveType);
+    }
+    if(objectType === 'inputType') {
+      return statement`builder.${objectType}<any>(${type}, ${j.objectExpression(objectProps)})`
     }
     return statement`builder.${objectType}<any>(${type})
   .implement(${j.objectExpression(objectProps)})`;

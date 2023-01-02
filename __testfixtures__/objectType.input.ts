@@ -47,3 +47,13 @@ export const Interface = interfaceType({
     return item.__typename;
   }
 });
+
+export const Input = inputObjectType({
+  name: 'Input',
+  definition(t) {
+    t.string('a');
+    t.int('b');
+    t.int('c');
+    t.int('d');
+  }
+});

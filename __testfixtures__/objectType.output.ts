@@ -49,3 +49,12 @@ export const Interface = builder.interfaceRef<any>('SomeType1')
     return item.__typename;
   }
 });
+
+export const Input = builder.inputType<any>('Input', {
+  fields: t => ({
+    a: t.string(),
+    b: t.int(),
+    c: t.int(),
+    d: t.int()
+  })
+});
