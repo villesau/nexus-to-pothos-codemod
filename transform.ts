@@ -184,19 +184,32 @@ const transform: Transform = (file, api) => {
         implementsInterfaces.push(node.expression.arguments[0].name);
         return null;
       }
-      if(objectType === 'interfaceRef'){
+      const isNullable = node.expression.callee.object.property?.name === 'nullable'
+      if(objectType === 'interfaceRef' || (node.expression.arguments.length === 2 && node.expression.callee.property.name !== 'field')){
         const functionName = node.expression.callee.property.name;
         const args = [];
         let name;
         if (functionName === 'field') {
           name = node.expression.arguments[0].properties.find(p => p.key.name === 'name').value.value
-          args.push(j.objectExpression(node.expression.arguments[0].properties.filter(p => p.key.name !== 'name')));
+          j.property('init', j.identifier('nullable'), j.booleanLiteral(true))
+          const props = node.expression.arguments[0].properties.filter(p => p.key.name !== 'name');
+          if(isNullable){
+            props.unshift(j.property('init', j.identifier('nullable'), j.booleanLiteral(true)))
+          }
+          args.push(j.objectExpression(props));
+        } else if(node.expression.arguments[1]){
+          name = node.expression.arguments[0].value
+          const props = node.expression.arguments[1].properties;
+          if(isNullable){
+            props.unshift(j.property('init', j.identifier('nullable'), j.booleanLiteral(true)))
+          }
+          args.push(j.objectExpression(props));
         } else {
           name = node.expression.arguments[0].value
         }
         return j.property('init', j.identifier(name), j.callExpression(j.memberExpression(j.identifier('t'), j.identifier(functionName)), args));
       }
-      const isNullable = node.expression.callee.object.property?.name === 'nullable'
+
       let propertyName;
       let type;
       let resolve;

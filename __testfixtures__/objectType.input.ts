@@ -20,6 +20,9 @@ export const SomeObjectType = objectType({
         return ctx.smthng();
       }
     });
+    t.float('g', {
+      resolve: () => 1,
+    });
   }
 });
 

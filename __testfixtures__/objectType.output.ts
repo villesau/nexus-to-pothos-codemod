@@ -11,7 +11,7 @@ export const SomeObjectType = builder.objectRef<any>('SomeObjectType')
       type: SomeEnum,
       nullable: true
     }),
-    e: t.exposeString('e', {
+    e: t.string({
       nullable: true,
       resolve(value: any) {
         return value.doSmthng();
@@ -22,6 +22,9 @@ export const SomeObjectType = builder.objectRef<any>('SomeObjectType')
       async resolve(rootObject: any, args, ctx) {
         return ctx.smthng();
       }
+    }),
+    g: t.float({
+      resolve: () => 1
     })
   })
 });
