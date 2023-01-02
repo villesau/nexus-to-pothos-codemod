@@ -1,7 +1,7 @@
 {
   "name": "nexus-to-pothos-codemod",
   "description": "Codemod to migrate from Nexus to Pothos",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "bin": {
     "nexus-to-pothos-codemod": "bin/index.js"
   },
