@@ -70,7 +70,7 @@ the generated GraphQL schema with the old one to see if there are any difference
 - lists not handled properly always, `[]` needs to be mostly added manually
 - args of `connnectionField` not transformed preoperly
 - `authScope` in connectionField and some nested fields not transformed properly
-- all caveats might not be discovered since the codemod is developed against single codebase with it`s own conventions
+- all caveats might not be discovered since the codemod is developed against single codebase with it's own conventions
 
 Parts that causes exceptions can be commented out and fixed manually. Rest are fairly easy to compare to the old schema.
 Be extra careful with the `authScope`.
